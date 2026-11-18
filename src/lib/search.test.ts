@@ -31,3 +31,33 @@ describe("CatalogSearch", () => {
     expect(received[0]?.map((p) => p.id)).toEqual(["seed-basil", "herb-basil"]);
   });
 });
+
+describe("TEST1-22: stale search responses must not overwrite newer results", () => {
+  it("TEST1-22 keeps the latest query's results when an earlier, slower response arrives last", async () => {
+    const roseResults = CATALOG.filter((p) => matchesQuery(p, "rose"));
+    const pending = new Map<string, (results: Product[]) => void>();
+    const fetcher = (query: string) =>
+      new Promise<Product[]>((resolve) => {
+        pending.set(query, resolve);
+      });
+
+    let latest: Product[] | undefined;
+    const search = new CatalogSearch(fetcher, (r) => {
+      latest = r;
+    });
+
+    // The user clears the box (empty query fetches the whole catalog)...
+    const emptySearch = search.search("");
+    // ...then quickly types "rose" before the first response comes back.
+    const roseSearch = search.search("rose");
+
+    // The newer query's response arrives first...
+    pending.get("rose")?.(roseResults);
+    await roseSearch;
+    // ...and the stale empty-query response arrives afterwards.
+    pending.get("")?.(CATALOG);
+    await emptySearch;
+
+    expect(latest?.map((p) => p.name)).toEqual(roseResults.map((p) => p.name));
+  });
+});
