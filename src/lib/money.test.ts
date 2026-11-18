@@ -9,6 +9,13 @@ describe("parsePrice", () => {
     expect(parsePrice("3")).toBe(300);
   });
 
+  // TEST1-25: cart prices don't match the product card price.
+  it("TEST1-25: charges exactly the catalog price shown on the product card", () => {
+    // Both prices come straight from src/data/catalog.ts.
+    expect(parsePrice("$1.15")).toBe(115); // Petunia Seed Packet
+    expect(parsePrice("$2.30")).toBe(230); // Basil Seed Packet
+  });
+
   it("rejects bad input", () => {
     expect(() => parsePrice("")).toThrow();
     expect(() => parsePrice("abc")).toThrow();
