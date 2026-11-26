@@ -30,6 +30,15 @@ describe("cartTotals", () => {
     expect(totals.total).toBe(4800 + SHIPPING_CENTS + 288);
   });
 
+  it("builds subtotal and total from exact unit cents", () => {
+    const seeds = { productId: "seed-petunia", name: "Petunia Seed Packet", unitCents: 115 };
+    const totals = cartTotals(addToCart([], seeds, 2));
+    expect(totals.subtotal).toBe(230);
+    expect(totals.shipping).toBe(SHIPPING_CENTS);
+    expect(totals.tax).toBe(14);
+    expect(totals.total).toBe(230 + SHIPPING_CENTS + 14);
+  });
+
   it("ships free on larger orders", () => {
     const totals = cartTotals(addToCart(addToCart([], snake), fig));
     expect(totals.subtotal).toBe(6200);

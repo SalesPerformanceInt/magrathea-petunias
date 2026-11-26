@@ -5,7 +5,7 @@ export function parsePrice(text: string): Cents {
   if (text.trim() === "" || !Number.isFinite(value) || value < 0) {
     throw new Error(`Invalid price: "${text}"`);
   }
-  return Math.floor(value * 100);
+  return Math.round(value * 100);
 }
 
 const formatter = new Intl.NumberFormat("en-US", {
