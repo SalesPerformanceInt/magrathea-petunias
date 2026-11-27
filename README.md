@@ -23,6 +23,17 @@ npm run typecheck
 npm run build
 ```
 
+### Journeys
+
+Playwright tests in `e2e/` walk the running shop in a browser. They start no server: build and serve the shop first, then give its address in `BASE_URL` (default `http://127.0.0.1:4173`). Each run keeps a video, a screenshot and a trace per test in `test-results/`. A step has 10 seconds (a navigation 15), so a journey that acts on something missing fails at that step.
+
+```sh
+npx playwright install chromium   # once, for the browser
+npm run build
+npx vite preview --host 127.0.0.1 --port 4173 --strictPort   # leave it running
+npx playwright test               # in another terminal
+```
+
 ### Layout
 
 | Path | What |
@@ -31,3 +42,4 @@ npm run build
 | `src/data/` | Catalog and sample order history |
 | `src/api/` | Simulated catalog API (adds network-like latency) |
 | `src/components/` | Catalog, cart and order history views |
+| `e2e/` | Journeys: Playwright tests that walk the running shop |
